@@ -88,6 +88,7 @@ const sendMessage = (data, body) => {
     message: data.message,
     recipientId: body.recipientId,
     sender: data.sender,
+    readStatus: data.readStatus? data.readStatus:true 
   });
 };
 

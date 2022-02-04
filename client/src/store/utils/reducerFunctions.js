@@ -16,6 +16,7 @@ export const addMessageToStore = (state, payload) => {
       const convoCopy = { ...convo };
       convoCopy.messages = [...convoCopy.messages, message].reverse();
       convoCopy.latestMessageText = message.text;
+      console.log("convoCopy.messages",convoCopy.messages)
       return convoCopy;
     } else {
       return convo;
