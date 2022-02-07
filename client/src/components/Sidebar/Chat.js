@@ -1,9 +1,10 @@
 import React from "react";
 import { Box } from "@material-ui/core";
-import { BadgeAvatar, ChatContent } from "../Sidebar";
+import { BadgeAvatar, ChatContent, Unread } from "../Sidebar";
 import { makeStyles } from "@material-ui/core/styles";
 import { setActiveChat } from "../../store/activeConversation";
 import { connect } from "react-redux";
+import { updateUnreadMsgs } from "../../store/utils/thunkCreators";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,10 +23,15 @@ const useStyles = makeStyles((theme) => ({
 const Chat = (props) => {
   const classes = useStyles();
   const { conversation } = props;
-  const { otherUser } = conversation;
+  const { otherUser, unread } = conversation;
 
   const handleClick = async (conversation) => {
+    const body = {
+      conversationId:conversation.id,
+      otherUserId:otherUser.id
+    }
     await props.setActiveChat(conversation.otherUser.username);
+    await props.updateUnreadMsgs(body);
   };
 
   return (
@@ -37,6 +43,7 @@ const Chat = (props) => {
         sidebar={true}
       />
       <ChatContent conversation={conversation} />
+      {unread > 0 && <Unread unread={unread} />}
     </Box>
   );
 };
@@ -45,6 +52,9 @@ const mapDispatchToProps = (dispatch) => {
   return {
     setActiveChat: (id) => {
       dispatch(setActiveChat(id));
+    },
+    updateUnreadMsgs: (body) => {
+      dispatch(updateUnreadMsgs(body));
     }
   };
 };
