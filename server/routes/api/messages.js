@@ -67,6 +67,7 @@ router.post("/unread", async (req, res, next) => {
     const conversation = await Conversation.findOne(
       {
         where:{id:conversationId},
+        order: [[Message,"createdAt", "ASC"]],
         include: Conversation.includeOptions(req.user.id)
       }
     );
