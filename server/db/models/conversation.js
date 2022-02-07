@@ -12,8 +12,8 @@ const Conversation = db.define("conversation", {
   },
   
   //type could be "direct"(2 participants) or "group"(3 or more participants) 
-  type: {
-    type: Sequelize.STRING,
+  typeId: {
+    type: Sequelize.INTEGER,
     allowNull: false,
   },
   //array of participants' IDs
