@@ -3,7 +3,25 @@ const db = require("../db");
 const Message = require("./message");
 const User = require("./user")
 const onlineUsers = require("../../onlineUsers");
-const Conversation = db.define("conversation", {});
+
+const Conversation = db.define("conversation", {
+  //name of the group and it could be null for direct conversations 
+  name: {
+    type: Sequelize.STRING,
+    allowNull: true,
+  },
+  
+  //type could be "direct"(2 participants) or "group"(3 or more participants) 
+  type: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  //array of participants' IDs
+  participants: {
+    type: Sequelize.ARRAY,
+    allowNull: false
+  }
+});
 
 // find conversation given two user Ids
 
