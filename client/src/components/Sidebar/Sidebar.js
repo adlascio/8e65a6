@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { Search, Chat, CurrentUser } from "./index.js";
 import moment from "moment";
 
+
 const useStyles = makeStyles(() => ({
   root: {
     paddingLeft: 21,
