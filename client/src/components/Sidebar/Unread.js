@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Badge } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(() => ({
@@ -14,8 +14,7 @@ const useStyles = makeStyles(() => ({
     color:"#FFFFFF",
     marginRight: 20
   },
-  unreadText: {
-    fontSize:10, 
+  unreadText: { 
     fontWeight:"bold"
   }
 }));
@@ -26,9 +25,9 @@ const Unread = (props) => {
 
   return (
     <Box className={classes.unread}>
-        <Typography className={classes.unreadText}>
+        <Badge className={classes.unreadText}>
             {unread}
-        </Typography>
+        </Badge>
     </Box>
   );
 };

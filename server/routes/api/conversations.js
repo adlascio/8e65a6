@@ -21,10 +21,12 @@ router.get("/", async (req, res, next) => {
       order: [[Message,"createdAt", "ASC"]],
       include: Conversation.includeOptions(userId),
     });
-
-    const updatedConversations = Conversation.setUpforFrontEnd(conversations, userId);
-
-    res.json(updatedConversations);
+    if(conversations.length > 0){
+      const updatedConversations = Conversation.setUpforFrontEnd(conversations, userId);
+      res.json(updatedConversations);
+    } else {
+      res.json(conversations);
+    }
   } catch (error) {
     next(error);
   }

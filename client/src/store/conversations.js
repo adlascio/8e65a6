@@ -5,6 +5,8 @@ import {
   removeOfflineUserFromStore,
   addMessageToStore,
   updateConvoToStore,
+  updateMsgReadToStore,
+  updateIsTypingToStore
 } from "./utils/reducerFunctions";
 
 // ACTIONS
@@ -17,6 +19,8 @@ const SET_SEARCHED_USERS = "SET_SEARCHED_USERS";
 const CLEAR_SEARCHED_USERS = "CLEAR_SEARCHED_USERS";
 const ADD_CONVERSATION = "ADD_CONVERSATION";
 const SET_UNREAD_MSGS = "SET_UNREAD_MSGS";
+const SET_MSG_READ = "SET_MSG_READ";
+const SET_IS_TYPING = "SET_IS_TYPING";
 
 // ACTION CREATORS
 
@@ -27,10 +31,10 @@ export const gotConversations = (conversations) => {
   };
 };
 
-export const setNewMessage = (message, sender, activeConversation) => {
+export const setNewMessage = (message, sender, activeConversation, recipientId, userId) => {
   return {
     type: SET_MESSAGE,
-    payload: { message, sender: sender || null, activeConversation },
+    payload: { message, sender: sender || null, activeConversation, recipientId, userId },
   };
 };
 
@@ -68,6 +72,20 @@ export const setUnreadMsgs = (conversation) => {
   };
 };
 
+export const setMsgRead = (data) => {
+  return {
+    type: SET_MSG_READ,
+    payload: data,
+  };
+};
+
+export const setIsTyping = (data) => {
+  return {
+    type: SET_IS_TYPING,
+    payload: data,
+  };
+};
+
 // add new conversation when sending a new message
 export const addConversation = (recipientId, newMessage) => {
   return {
@@ -102,6 +120,10 @@ const reducer = (state = [], action) => {
       );
     case SET_UNREAD_MSGS:
       return updateConvoToStore(state, action.conversation)
+    case SET_MSG_READ:
+      return updateMsgReadToStore(state, action.payload)
+    case SET_IS_TYPING:
+      return updateIsTypingToStore(state, action.payload)
     default:
       return state;
   }

@@ -88,9 +88,17 @@ const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
     recipientId: body.recipientId,
-    sender: data.sender,
+    sender: body.conversationId? null: data.sender,
     readStatus: data.readStatus? data.readStatus:true 
   });
+};
+
+const updateMessageRead = (conversationId, lastMsgRead) => {
+  socket.emit("message-read", {conversationId, lastMsgRead});
+};
+
+const emitIsTyping = (isTyping, conversationId) => {
+  socket.emit("typing", {isTyping, conversationId});
 };
 
 // message format to send: {recipientId, text, conversationId}
@@ -120,8 +128,22 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
 
 export const updateUnreadMsgs = (body) => async (dispatch) => {
   try {
-    const { data } = await axios.post("/api/messages/unread", body);
-    dispatch(setUnreadMsgs(data));
+    const { data } = await axios.put("/api/messages/unread", body);
+    const {updatedConversation, lastMsgRead} = data
+    dispatch(setUnreadMsgs(updatedConversation));
+    if(updatedConversation.messages.length>0){
+      updateMessageRead(updatedConversation.id,lastMsgRead);
+    }
+    
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const setTyping = (isTyping,conversationId) => async () => {
+  try {
+    emitIsTyping(isTyping,conversationId)
   } catch (error) {
     console.error(error);
   }
