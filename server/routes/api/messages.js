@@ -51,7 +51,7 @@ router.put("/unread", async (req, res, next) => {
       return res.sendStatus(401);
     }
     if(req.user.id !== req.body.otherUserId && req.user.id !== req.body.userId){
-      return res.sendStatus(401);
+      return res.sendStatus(403);
     }
     const { conversationId, otherUserId, userId } = req.body;
 
