@@ -5,6 +5,7 @@ import {
   addConversation,
   setNewMessage,
   setSearchedUsers,
+  setUnreadMsgs,
 } from "../conversations";
 import { gotUser, setFetchingStatus } from "../user";
 
@@ -87,8 +88,17 @@ const sendMessage = (data, body) => {
   socket.emit("new-message", {
     message: data.message,
     recipientId: body.recipientId,
-    sender: data.sender,
+    sender: body.conversationId? null: data.sender,
+    readStatus: data.readStatus? data.readStatus:true 
   });
+};
+
+const updateMessageRead = (conversationId, lastMsgRead) => {
+  socket.emit("message-read", {conversationId, lastMsgRead});
+};
+
+const emitIsTyping = (isTyping, conversationId) => {
+  socket.emit("typing", {isTyping, conversationId});
 };
 
 // message format to send: {recipientId, text, conversationId}
@@ -111,6 +121,29 @@ export const searchUsers = (searchTerm) => async (dispatch) => {
   try {
     const { data } = await axios.get(`/api/users/${searchTerm}`);
     dispatch(setSearchedUsers(data));
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const updateUnreadMsgs = (body) => async (dispatch) => {
+  try {
+    const { data } = await axios.put("/api/messages/unread", body);
+    const {updatedConversation, lastMsgRead} = data
+    dispatch(setUnreadMsgs(updatedConversation));
+    if(updatedConversation.messages.length>0){
+      updateMessageRead(updatedConversation.id,lastMsgRead);
+    }
+    
+
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const setTyping = (isTyping,conversationId) => async () => {
+  try {
+    emitIsTyping(isTyping,conversationId)
   } catch (error) {
     console.error(error);
   }

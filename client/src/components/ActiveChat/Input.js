@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FormControl, FilledInput } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { connect } from "react-redux";
-import { postMessage } from "../../store/utils/thunkCreators";
+import { postMessage, setTyping } from "../../store/utils/thunkCreators";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -19,11 +19,23 @@ const useStyles = makeStyles(() => ({
 
 const Input = (props) => {
   const classes = useStyles();
-  const [text, setText] = useState("");
+  const [input, setInput] = useState({text:"", isTyping:false});
   const { postMessage, otherUser, conversationId, user } = props;
 
-  const handleChange = (event) => {
-    setText(event.target.value);
+  const handleChange = async (e) => {
+    if(e.target.value === ""){
+      if(input.isTyping){
+        setInput({isTyping:false, text:e.target.value})
+        await props.setIsTyping(false,conversationId)
+      }
+    } else {
+      if(!input.isTyping){
+        setInput({isTyping:true, text:e.target.value})
+        await props.setIsTyping(true,conversationId)
+      } else {
+        setInput({...input, text:e.target.value})
+      } 
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -33,10 +45,14 @@ const Input = (props) => {
       text: event.target.text.value,
       recipientId: otherUser.id,
       conversationId,
-      sender: conversationId ? null : user
+      sender: user,
+      readStatus:false
     };
-    await postMessage(reqBody);
-    setText("");
+    if(reqBody.text !== ""){
+      setInput({isTyping:false, text:""});
+      await props.setIsTyping(false,conversationId)
+      await postMessage(reqBody);
+    }
   };
 
   return (
@@ -46,7 +62,7 @@ const Input = (props) => {
           classes={{ root: classes.input }}
           disableUnderline
           placeholder="Type something..."
-          value={text}
+          value={input.text}
           name="text"
           onChange={handleChange}
         />
@@ -60,6 +76,9 @@ const mapDispatchToProps = (dispatch) => {
     postMessage: (message) => {
       dispatch(postMessage(message));
     },
+    setIsTyping: (isTyping, conversationId) => {
+      dispatch(setTyping(isTyping, conversationId));
+    }
   };
 };
 
